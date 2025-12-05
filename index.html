@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AMSS · ID Review</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      -webkit-font-smoothing: antialiased;
+      margin: 0;
+    }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .channel-btn-selected {
+      background-color: #0284c7 !important;
+      color: #ffffff !important;
+      border-color: #0284c7 !important;
+      box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
+      font-weight: 600;
+    }
+
+    .decision-btn-selected {
+      color: #ffffff !important;
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.25);
+      font-weight: 600;
+    }
+    .decision-green { background-color: rgb(22 163 74) !important; }
+    .decision-yellow { background-color: rgb(234 179 8) !important; }
+    .decision-red { background-color: rgb(220 38 38) !important; }
+
+    .queue-active {
+      background-color: #0284c7 !important;
+      color: #ffffff !important;
+      border-color: #0284c7 !important;
+      box-shadow: 0 4px 10px rgba(2,132,199,0.25);
+      font-weight: 600;
+    }
+
+    .nav-active span.icon {
+      background-color: #0ea5e9;
+      color: #ffffff;
+    }
+    .nav-active span.label {
+      color: #0ea5e9;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body class="bg-[#F3F5F9] min-h-screen flex flex-col">
+
+  <div class="flex-1 flex justify-center">
+    <div class="w-full max-w-md px-4 pb-24 relative">
+
+      <!-- ---------- SCREEN: HOME (ID REVIEW) ---------- -->
+      <div id="screen-home" class="screen">
+
+        <!-- Header -->
+        <div class="bg-sky-600 text-white py-5 mb-4 -mx-4 shadow-md">
+          <div class="flex items-start justify-between px-4">
+            <div class="flex items-start gap-3">
+              <div class="w-11 h-11 rounded-full overflow-hidden border border-white/40 bg-white/20 flex items-center justify-center">
+                <img src="vinod.png" alt="Dr Vinod" class="w-full h-full object-cover">
+              </div>
+              <div>
+                <p class="text-[11px] tracking-wide uppercase text-white/80">ID REVIEW – AMSS</p>
+                <p class="text-lg font-semibold mt-0.5">Hi, Dr. Vinod</p>
+                <p class="text-[11px] text-white/85 mt-1">Cairo General Hospital · Egypt</p>
+              </div>
+            </div>
+            <button class="w-9 h-9 rounded-2xl bg-white/15 flex items-center justify-center text-lg shadow-sm">
+              🔔
+            </button>
+          </div>
+        </div>
+
+        <!-- Today’s queue -->
+        <div class="mb-4 mt-1">
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-xs font-semibold text-slate-700">Today’s queue</p>
+            <p class="text-[11px] text-slate-500">12 cases</p>
+          </div>
+          <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+            <button
+              class="queue-btn shrink-0 px-3 py-2 rounded-2xl border border-slate-200 bg-white text-[11px] text-slate-700 shadow-sm queue-active"
+              data-patient="asha"
+            >
+              Asha · CAP · Medicine
+            </button>
+            <button
+              class="queue-btn shrink-0 px-3 py-2 rounded-2xl bg-white text-[11px] text-slate-700 border border-slate-200 shadow-sm"
+              data-patient="mary"
+            >
+              Mary · HAP · ICU
+            </button>
+            <button
+              class="queue-btn shrink-0 px-3 py-2 rounded-2xl bg-white text-[11px] text-slate-700 border border-slate-200 shadow-sm"
+              data-patient="thomas"
+            >
+              Thomas · UTI · Surgery
+            </button>
+            <button
+              class="queue-btn shrink-0 px-3 py-2 rounded-2xl bg-white text-[11px] text-slate-700 border border-slate-200 shadow-sm"
+              data-patient="narayanan"
+            >
+              Narayanan · DFU · Ortho
+            </button>
+          </div>
+        </div>
+
+        <!-- Clinical summary -->
+        <div class="bg-white rounded-3xl p-4 shadow-sm mb-3 border border-slate-100">
+          <p class="text-sm font-semibold text-slate-900 mb-2">Clinical summary</p>
+          <div class="grid grid-cols-2 gap-3 text-[11px] text-slate-700 mb-3">
+            <div class="space-y-1">
+              <p><span class="font-semibold">Name:</span> <span id="cs-name">Asha Nair</span></p>
+              <p><span class="font-semibold">Ward:</span> <span id="cs-ward">Medicine</span></p>
+              <p><span class="font-semibold">Oxygen:</span> <span id="cs-oxygen">Nasal cannula</span></p>
+              <p><span class="font-semibold">Treating doctor:</span> <span id="cs-treating">Dr. Ahmed – Medicine Consultant</span></p>
+            </div>
+            <div class="space-y-1">
+              <p><span class="font-semibold">Comorbid:</span> <span id="cs-comorbid">DM, HTN</span></p>
+              <p><span class="font-semibold">Diagnosis:</span> <span id="cs-diagnosis">Community-acquired pneumonia (CAP)</span></p>
+              <p><span class="font-semibold">Status:</span> <span id="cs-status">Stable</span></p>
+              <p><span class="font-semibold">ID doctor:</span> <span id="cs-iddoctor">Dr. Vinod – ID Physician</span></p>
+            </div>
+          </div>
+          <p id="cs-narrative" class="text-[11px] text-slate-600 bg-slate-50 rounded-2xl p-3 leading-relaxed">
+            54-year-old female admitted with fever, productive cough, and pleuritic chest pain. Chest X-ray shows right lower
+            lobe consolidation. CRP elevated; no septic shock, no vasopressor support, and no mechanical ventilation. Vital
+            signs and oxygen saturation have improved on therapy, and she is currently haemodynamically stable on low-flow
+            nasal cannula with saturations &gt;94%. No ICU criteria at present.
+          </p>
+        </div>
+
+        <!-- Detailed section for Asha -->
+        <div id="detailed-section">
+
+          <!-- Regimen vs guideline -->
+          <div class="bg-white rounded-3xl p-4 shadow-sm mb-3 border border-slate-100">
+            <div class="flex items-center justify-between mb-2">
+              <p class="text-sm font-semibold text-slate-900">Antibiotic regimen</p>
+              <p class="text-[11px] text-slate-500">CAP guideline</p>
+            </div>
+            <div class="grid grid-cols-1 gap-3 text-[12px]">
+              <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                <p class="text-xs font-semibold text-slate-800 mb-1">Current regimen (Day 4)</p>
+                <p><span class="font-semibold">Ceftriaxone:</span> 2 g IV OD</p>
+                <p><span class="font-semibold">Azithromycin:</span> 500 mg PO OD</p>
+                <p><span class="font-semibold">Planned duration:</span> Not specified</p>
+              </div>
+              <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-3">
+                <p class="text-xs font-semibold text-emerald-900 mb-1">Guideline-recommended regimen</p>
+                <p><span class="font-semibold">Cefotaxime:</span> 1–2 g IV every 8 hours</p>
+                <p><span class="font-semibold">± Azithromycin:</span> 500 mg OD for up to 3 days</p>
+                <p>Total course 5–7 days depending on response, with IV-to-oral step-down when stable.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI assessment -->
+          <div class="bg-white rounded-3xl p-4 shadow-sm mb-3 border border-slate-100">
+            <div class="flex items-center justify-between mb-2">
+              <p class="text-sm font-semibold text-slate-900">AI assessment</p>
+              <span class="px-2 py-1 rounded-full bg-amber-50 text-amber-700 text-[11px] font-semibold">
+                Partial compliance
+              </span>
+            </div>
+
+            <div class="mb-3">
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-slate-600">Guideline compliance score</span>
+                <span class="font-semibold text-amber-700">~60%</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
+                <div class="h-2 bg-gradient-to-r from-rose-500 via-amber-400 to-emerald-500" style="width:60%;"></div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-[11px] mb-3">
+              <div class="rounded-2xl border border-slate-200 bg-slate-50 p-2.5">
+                <p class="font-semibold text-slate-800 mb-1 text-[11px]">Current spectrum</p>
+                <div class="flex flex-wrap gap-1">
+                  <span class="px-2 py-1 rounded-full bg-emerald-100 text-emerald-800">Typical CAP cover</span>
+                  <span class="px-2 py-1 rounded-full bg-amber-100 text-amber-800">Broader cephalosporin</span>
+                  <span class="px-2 py-1 rounded-full bg-rose-100 text-rose-800">&gt;72h dual cover</span>
+                </div>
+              </div>
+              <div class="rounded-2xl border border-slate-200 bg-white p-2.5">
+                <p class="font-semibold text-slate-800 mb-1 text-[11px]">Guideline spectrum</p>
+                <div class="flex flex-wrap gap-1">
+                  <span class="px-2 py-1 rounded-full bg-emerald-100 text-emerald-800">Typical CAP cover</span>
+                  <span class="px-2 py-1 rounded-full bg-emerald-100 text-emerald-800">Step-down friendly</span>
+                  <span class="px-2 py-1 rounded-full bg-rose-100 text-rose-800">Short macrolide course</span>
+                </div>
+              </div>
+            </div>
+
+            <p class="text-[11px] text-slate-700">
+              AI: Current regimen is <span class="font-semibold text-amber-700">partially compliant</span>. Ceftriaxone provides slightly
+              broader Gram-negative cover compared with guideline-preferred cefotaxime but remains acceptable as empirical cover
+              for CAP in this setting. Main variance is broader first-line choice and continuation of azithromycin beyond Day 3
+              in a clinically stable patient.
+            </p>
+          </div>
+
+          <!-- Nurse assessment -->
+          <div class="bg-white rounded-3xl p-4 shadow-sm mb-3 border border-slate-100">
+            <div class="flex items-center justify-between mb-2">
+              <p class="text-sm font-semibold text-slate-900">Nurse assessment</p>
+              <span class="px-2 py-1 rounded-full bg-amber-50 text-amber-700 text-[11px] font-semibold">
+                Partially compliant
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-700 bg-amber-50 rounded-2xl p-2.5">
+              Stewardship nurse has marked this case as <span class="font-semibold">partially compliant</span> and forwarded it to the
+              ID physician for final decision on ceftriaxone continuation and macrolide de-escalation.
+            </p>
+          </div>
+
+          <!-- ID decision -->
+          <div class="bg-white rounded-3xl p-4 shadow-sm mb-3 border border-slate-100">
+            <p class="text-sm font-semibold text-slate-900 mb-2">Your decision</p>
+
+            <div class="flex flex-wrap gap-2 mb-3 text-xs">
+              <button
+                class="decision-btn flex-1 min-w-[30%] px-3 py-2 rounded-2xl bg-slate-100 text-slate-700"
+                data-decision="compliant"
+              >Compliant</button>
+              <button
+                class="decision-btn flex-1 min-w-[30%] px-3 py-2 rounded-2xl bg-slate-100 text-slate-700"
+                data-decision="partial"
+              >Partially compliant</button>
+              <button
+                class="decision-btn w-full px-3 py-2 rounded-2xl bg-slate-100 text-slate-700"
+                data-decision="noncompliant"
+              >Non-compliant</button>
+            </div>
+
+            <label class="block text-[11px] font-semibold text-slate-700 mb-1">
+              Decision notes (for stewardship log)
+            </label>
+            <textarea
+              rows="2"
+              class="w-full text-sm p-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-500 mb-3"
+              placeholder="Optional internal note (not sent to treating clinician)"
+            ></textarea>
+
+            <button class="w-full py-2.5 rounded-2xl bg-sky-600 text-white text-sm font-semibold shadow">
+              Save decision
+            </button>
+          </div>
+
+          <!-- Send recommendation -->
+          <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-100">
+            <p class="text-sm font-semibold text-slate-900 mb-2">Send recommendation</p>
+            <p class="text-[10px] text-slate-500 mb-2">Select one or more channels.</p>
+
+            <div class="grid grid-cols-1 gap-3 text-sm mb-3">
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-700 mb-1">Channels</label>
+                <div class="flex gap-2">
+                  <button
+                    class="channel-btn flex-1 px-3 py-2 rounded-2xl bg-white border border-slate-200 text-[11px] text-slate-700"
+                    data-channel="telegram"
+                  >Telegram</button>
+                  <button
+                    class="channel-btn flex-1 px-3 py-2 rounded-2xl bg-white border border-slate-200 text-[11px] text-slate-700"
+                    data-channel="whatsapp"
+                  >WhatsApp</button>
+                  <button
+                    class="channel-btn flex-1 px-3 py-2 rounded-2xl bg-white border border-slate-200 text-[11px] text-slate-700"
+                    data-channel="email"
+                  >Email</button>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-700 mb-1">Recipient clinician</label>
+                <input
+                  type="text"
+                  class="w-full p-2.5 rounded-2xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  value="Dr. Ahmed – Medicine Consultant"
+                />
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-700 mb-1">Message to treating clinician</label>
+                <textarea
+                  rows="4"
+                  class="w-full text-sm p-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-500 overflow-y-auto"
+                  style="min-height: 120px;"
+                >Regimen is partially compliant. Ceftriaxone is acceptable as first-line in this setting, but macrolide cover can usually be stopped after Day 3 if the patient is stable with no atypical suspicion. Continue ceftriaxone 2 g IV OD to complete 5–7 days total, then step down to oral therapy as appropriate.</textarea>
+              </div>
+            </div>
+
+            <button class="w-full py-3 rounded-2xl bg-sky-600 text-white text-sm font-semibold shadow">
+              Send recommendation
+            </button>
+          </div>
+        </div>
+
+        <!-- Simple section for completed cases -->
+        <div id="simple-section" class="hidden">
+          <div class="bg-white rounded-3xl p-4 shadow-sm mb-3 border border-emerald-200">
+            <div class="flex items-center justify-between mb-1">
+              <p class="text-sm font-semibold text-slate-900">Case status</p>
+              <span class="px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-semibold">
+                Completed
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-700">
+              Stewardship review has been completed for this case and actions have been recorded.
+            </p>
+          </div>
+
+          <div class="bg-white rounded-3xl p-4 shadow-sm mb-3 border border-slate-100">
+            <p class="text-sm font-semibold text-slate-900 mb-2">Stewardship summary</p>
+            <div class="space-y-1.5 text-[11px] text-slate-700 mb-3">
+              <p><span class="font-semibold">Nurse assessment:</span> <span id="simple-nurse">Compliant</span></p>
+              <p><span class="font-semibold">AI assessment:</span> <span id="simple-ai">Compliant</span></p>
+              <p><span class="font-semibold">Your assessment:</span> <span id="simple-id">Compliant</span></p>
+            </div>
+            <div class="space-y-1 text-[11px] text-emerald-700 bg-emerald-50 rounded-2xl p-2.5">
+              <p>✓ Successfully updated to stewardship database.</p>
+              <p>✓ Successfully sent notes to treating physician.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- SCREEN: REVIEWS LIST ---------- -->
+      <div id="screen-reviews" class="screen hidden">
+
+        <!-- Header (same style) -->
+        <div class="bg-sky-600 text-white py-5 mb-4 -mx-4 shadow-md">
+          <div class="flex items-start justify-between px-4">
+            <div class="flex items-start gap-3">
+              <div class="w-11 h-11 rounded-full overflow-hidden border border-white/40 bg-white/20 flex items-center justify-center">
+                <img src="vinod.png" alt="Dr Vinod" class="w-full h-full object-cover">
+              </div>
+              <div>
+                <p class="text-[11px] tracking-wide uppercase text-white/80">ID REVIEW – AMSS</p>
+                <p class="text-lg font-semibold mt-0.5">Hi, Dr. Vinod</p>
+                <p class="text-[11px] text-white/85 mt-1">Cairo General Hospital · Egypt</p>
+              </div>
+            </div>
+            <button class="w-9 h-9 rounded-2xl bg-white/15 flex items-center justify-center text-lg shadow-sm">
+              🔔
+            </button>
+          </div>
+        </div>
+
+        <div class="py-0">
+          <h2 class="text-lg font-semibold text-slate-900 mb-1">Review queue</h2>
+          <p class="text-[12px] text-slate-500 mb-4">Overview of cases assigned to you today.</p>
+
+          <div class="space-y-3 text-sm">
+            <div class="bg-white rounded-3xl p-3.5 shadow-sm border border-sky-100 flex items-center justify-between">
+              <div>
+                <p class="font-semibold text-slate-900">Asha Nair</p>
+                <p class="text-[11px] text-slate-500">CAP · Medicine · MRN 203948</p>
+              </div>
+              <span class="px-2.5 py-1 rounded-full bg-sky-50 text-sky-700 text-[11px] font-semibold">
+                Ongoing
+              </span>
+            </div>
+
+            <div class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-100 flex items-center justify-between">
+              <div>
+                <p class="font-semibold text-slate-900">Mary Joseph</p>
+                <p class="text-[11px] text-slate-500">HAP · ICU · MRN 204112</p>
+              </div>
+              <span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-semibold">
+                Completed
+              </span>
+            </div>
+
+            <div class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-100 flex items-center justify-between">
+              <div>
+                <p class="font-semibold text-slate-900">Thomas Mathew</p>
+                <p class="text-[11px] text-slate-500">UTI · Surgery · MRN 198774</p>
+              </div>
+              <span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-semibold">
+                Completed
+              </span>
+            </div>
+
+            <div class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-100 flex items-center justify-between">
+              <div>
+                <p class="font-semibold text-slate-900">Narayanan Pillai</p>
+                <p class="text-[11px] text-slate-500">DFU · Ortho · MRN 201556</p>
+              </div>
+              <span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-semibold">
+                Completed
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- SCREEN: ANALYTICS ---------- -->
+      <div id="screen-analytics" class="screen hidden">
+
+        <!-- Header -->
+        <div class="bg-sky-600 text-white py-5 mb-4 -mx-4 shadow-md">
+          <div class="flex items-start justify-between px-4">
+            <div class="flex items-start gap-3">
+              <div class="w-11 h-11 rounded-full overflow-hidden border border-white/40 bg-white/20 flex items-center justify-center">
+                <img src="vinod.png" alt="Dr Vinod" class="w-full h-full object-cover">
+              </div>
+              <div>
+                <p class="text-[11px] tracking-wide uppercase text-white/80">ID REVIEW – AMSS</p>
+                <p class="text-lg font-semibold mt-0.5">Hi, Dr. Vinod</p>
+                <p class="text-[11px] text-white/85 mt-1">Cairo General Hospital · Egypt</p>
+              </div>
+            </div>
+            <button class="w-9 h-9 rounded-2xl bg-white/15 flex items-center justify-center text-lg shadow-sm">
+              🔔
+            </button>
+          </div>
+        </div>
+
+        <div class="py-0">
+          <h2 class="text-lg font-semibold text-slate-900 mb-1">Your analytics</h2>
+          <p class="text-[12px] text-slate-500 mb-4">Stewardship activity and patterns.</p>
+
+          <!-- KPIs -->
+          <div class="grid grid-cols-3 gap-2 mb-4 text-center text-[11px]">
+            <div class="bg-white rounded-3xl p-3 shadow-sm border border-slate-100">
+              <p class="text-slate-500 mb-1">This month</p>
+              <p class="text-lg font-semibold text-slate-900">124</p>
+              <p class="text-slate-400 mt-1">cases</p>
+            </div>
+            <div class="bg-white rounded-3xl p-3 shadow-sm border border-slate-100">
+              <p class="text-slate-500 mb-1">This year</p>
+              <p class="text-lg font-semibold text-slate-900">1,482</p>
+              <p class="text-slate-400 mt-1">cases</p>
+            </div>
+            <div class="bg-white rounded-3xl p-3 shadow-sm border border-slate-100">
+              <p class="text-slate-500 mb-1">Completion</p>
+              <p class="text-lg font-semibold text-emerald-600">96%</p>
+              <p class="text-slate-400 mt-1">on-time</p>
+            </div>
+          </div>
+
+          <!-- Activity by month: Jan–Dec line chart -->
+          <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-100 mb-3">
+            <div class="flex items-center justify-between mb-2">
+              <p class="text-sm font-semibold text-slate-900">Your activity by month</p>
+              <p class="text-[11px] text-slate-400">Cases reviewed (2025)</p>
+            </div>
+            <div class="w-full h-24">
+              <svg viewBox="0 0 120 60" class="w-full h-full">
+                <!-- line through Jan–Dec -->
+                <polyline
+                  fill="none"
+                  stroke="#0ea5e9"
+                  stroke-width="2"
+                  points="
+                    0,42
+                    11,38
+                    22,34
+                    33,30
+                    44,32
+                    55,27
+                    66,24
+                    77,26
+                    88,30
+                    99,28
+                    110,24
+                    120,22
+                  "
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <!-- points -->
+                <circle cx="0"   cy="42" r="2.3" fill="#0ea5e9" />
+                <circle cx="11"  cy="38" r="2.3" fill="#0ea5e9" />
+                <circle cx="22"  cy="34" r="2.3" fill="#0ea5e9" />
+                <circle cx="33"  cy="30" r="2.3" fill="#0ea5e9" />
+                <circle cx="44"  cy="32" r="2.3" fill="#0ea5e9" />
+                <circle cx="55"  cy="27" r="2.3" fill="#0ea5e9" />
+                <circle cx="66"  cy="24" r="2.3" fill="#0ea5e9" />
+                <circle cx="77"  cy="26" r="2.3" fill="#0ea5e9" />
+                <circle cx="88"  cy="30" r="2.3" fill="#0ea5e9" />
+                <circle cx="99"  cy="28" r="2.3" fill="#0ea5e9" />
+                <circle cx="110" cy="24" r="2.3" fill="#0ea5e9" />
+                <circle cx="120" cy="22" r="2.3" fill="#0ea5e9" />
+              </svg>
+              <div class="flex justify-between text-[9px] text-slate-500 mt-1 px-1">
+                <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+                <span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Non-compliance by ward: horizontal bars -->
+          <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-100">
+            <div class="flex items-center justify-between mb-2">
+              <p class="text-sm font-semibold text-slate-900">Non-compliant cases by ward</p>
+              <p class="text-[11px] text-slate-400">Last 3 months</p>
+            </div>
+            <div class="space-y-2 text-[11px]">
+              <div class="flex items-center gap-2">
+                <span class="w-20 text-slate-600">Medicine</span>
+                <div class="flex-1 h-2 rounded-full bg-rose-100 overflow-hidden">
+                  <div class="h-2 w-3/4 bg-rose-500"></div>
+                </div>
+                <span class="w-8 text-right text-slate-500">75%</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-20 text-slate-600">ICU</span>
+                <div class="flex-1 h-2 rounded-full bg-rose-100 overflow-hidden">
+                  <div class="h-2 w-4/5 bg-rose-500"></div>
+                </div>
+                <span class="w-8 text-right text-slate-500">80%</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-20 text-slate-600">Surgery</span>
+                <div class="flex-1 h-2 rounded-full bg-rose-100 overflow-hidden">
+                  <div class="h-2 w-2/5 bg-rose-500"></div>
+                </div>
+                <span class="w-8 text-right text-slate-500">40%</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-20 text-slate-600">Ortho</span>
+                <div class="flex-1 h-2 rounded-full bg-rose-100 overflow-hidden">
+                  <div class="h-2 w-1/3 bg-rose-500"></div>
+                </div>
+                <span class="w-8 text-right text-slate-500">33%</span>
+              </div>
+            </div>
+            <p class="text-[11px] text-emerald-700 mt-2">
+              Highest non-compliance is currently in ICU and Medicine wards, with lower rates in Surgery and Orthopaedics.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- SCREEN: PROFILE ---------- -->
+      <div id="screen-profile" class="screen hidden">
+
+        <!-- Header -->
+        <div class="bg-sky-600 text-white py-5 mb-4 -mx-4 shadow-md">
+          <div class="flex items-start justify-between px-4">
+            <div class="flex items-start gap-3">
+              <div class="w-11 h-11 rounded-full overflow-hidden border border-white/40 bg-white/20 flex items-center justify-center">
+                <img src="vinod.png" alt="Dr Vinod" class="w-full h-full object-cover">
+              </div>
+              <div>
+                <p class="text-[11px] tracking-wide uppercase text-white/80">ID REVIEW – AMSS</p>
+                <p class="text-lg font-semibold mt-0.5">Hi, Dr. Vinod</p>
+                <p class="text-[11px] text-white/85 mt-1">Cairo General Hospital · Egypt</p>
+              </div>
+            </div>
+            <button class="w-9 h-9 rounded-2xl bg-white/15 flex items-center justify-center text-lg shadow-sm">
+              🔔
+            </button>
+          </div>
+        </div>
+
+        <div class="py-0">
+          <h2 class="text-lg font-semibold text-slate-900 mb-1">Profile</h2>
+          <p class="text-[12px] text-slate-500 mb-4">Your AMSS account.</p>
+
+          <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-100 mb-3">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-14 h-14 rounded-full overflow-hidden border border-slate-200 bg-sky-50 flex items-center justify-center">
+                <img src="vinod.png" alt="Dr Vinod" class="w-full h-full object-cover">
+              </div>
+            </div>
+            <p class="font-semibold text-slate-900 text-base">Dr. Vinod Kumar</p>
+            <p class="text-[11px] text-slate-500 mb-3">ID Physician · Cairo General Hospital</p>
+            <button class="px-3 py-1.5 rounded-2xl border border-slate-200 text-[11px] text-slate-700">
+              Change profile photo
+            </button>
+          </div>
+
+          <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-100 mb-3 text-[11px] text-slate-700 space-y-1.5">
+            <p><span class="font-semibold">Email:</span> drvgv@yahoo.com</p>
+            <p><span class="font-semibold">Mobile:</span> +91&nbsp;99953&nbsp;14858</p>
+            <p><span class="font-semibold">Notification window:</span> 08:00–22:00 local time</p>
+            <p><span class="font-semibold">Joined AMSS:</span> Jan 2025</p>
+          </div>
+
+          <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-100 text-[11px] text-slate-700">
+            <p class="font-semibold text-slate-900 mb-3">App settings</p>
+            <div class="flex items-center justify-between mb-2">
+              <span>Push notifications</span>
+              <span class="w-9 h-5 rounded-full bg-sky-500 flex items-center justify-end px-1 text-[9px] text-white">On</span>
+            </div>
+            <div class="flex items-center justify-between mb-2">
+              <span>Daily summary email</span>
+              <span class="w-9 h-5 rounded-full bg-slate-300 flex items-center justify-start px-1 text-[9px] text-white">Off</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span>Language</span>
+              <span class="px-2 py-1 rounded-2xl bg-slate-100 text-slate-700 text-[10px]">English</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom navigation -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200">
+    <div class="max-w-md mx-auto flex justify-between px-8 py-2 text-[11px] text-slate-500">
+      <button class="nav-btn nav-active flex flex-col items-center gap-0.5" data-screen="home">
+        <span class="icon w-7 h-7 rounded-2xl bg-sky-50 flex items-center justify-center text-xs">🏥</span>
+        <span class="label">Home</span>
+      </button>
+      <button class="nav-btn flex flex-col items-center gap-0.5" data-screen="reviews">
+        <span class="icon w-7 h-7 rounded-2xl bg-slate-100 flex items-center justify-center text-xs">📋</span>
+        <span class="label">Reviews</span>
+      </button>
+      <button class="nav-btn flex flex-col items-center gap-0.5" data-screen="analytics">
+        <span class="icon w-7 h-7 rounded-2xl bg-slate-100 flex items-center justify-center text-xs">📊</span>
+        <span class="label">Analytics</span>
+      </button>
+      <button class="nav-btn flex flex-col items-center gap-0.5" data-screen="profile">
+        <span class="icon w-7 h-7 rounded-2xl bg-slate-100 flex items-center justify-center text-xs">👤</span>
+        <span class="label">Profile</span>
+      </button>
+    </div>
+  </nav>
+
+  <script>
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const screens = {
+      home: document.getElementById('screen-home'),
+      reviews: document.getElementById('screen-reviews'),
+      analytics: document.getElementById('screen-analytics'),
+      profile: document.getElementById('screen-profile'),
+    };
+
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-screen');
+        Object.values(screens).forEach(s => s.classList.add('hidden'));
+        screens[target].classList.remove('hidden');
+        navButtons.forEach(b => b.classList.remove('nav-active'));
+        btn.classList.add('nav-active');
+      });
+    });
+
+    document.querySelectorAll('.channel-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const isActive = btn.classList.toggle('channel-btn-selected');
+        if (!isActive) {
+          btn.style.backgroundColor = '#ffffff';
+          btn.style.color = '#0f172a';
+          btn.style.borderColor = '#e5e7eb';
+          btn.style.boxShadow = 'none';
+        } else {
+          btn.style.backgroundColor = '#0284c7';
+          btn.style.color = '#ffffff';
+          btn.style.borderColor = '#0284c7';
+          btn.style.boxShadow = '0 4px 10px rgba(2,132,199,0.3)';
+        }
+      });
+    });
+
+    const decisionButtons = document.querySelectorAll('.decision-btn');
+    decisionButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        decisionButtons.forEach(b => {
+          b.classList.remove('decision-btn-selected', 'decision-green', 'decision-yellow', 'decision-red');
+          b.classList.add('bg-slate-100', 'text-slate-700');
+        });
+        btn.classList.remove('bg-slate-100', 'text-slate-700');
+        btn.classList.add('decision-btn-selected');
+
+        const type = btn.getAttribute('data-decision');
+        if (type === 'compliant') btn.classList.add('decision-green');
+        else if (type === 'partial') btn.classList.add('decision-yellow');
+        else if (type === 'noncompliant') btn.classList.add('decision-red');
+      });
+    });
+
+    const patients = {
+      asha: {
+        name: 'Asha Nair',
+        ward: 'Medicine',
+        oxygen: 'Nasal cannula',
+        treating: 'Dr. Ahmed – Medicine Consultant',
+        comorbid: 'DM, HTN',
+        diagnosis: 'Community-acquired pneumonia (CAP)',
+        status: 'Stable',
+        iddoctor: 'Dr. Vinod – ID Physician',
+        narrative: '54-year-old female admitted with fever, productive cough, and pleuritic chest pain. Chest X-ray shows right lower lobe consolidation. CRP elevated; no septic shock, no vasopressor support, and no mechanical ventilation. Vital signs and oxygen saturation have improved on therapy, and she is currently haemodynamically stable on low-flow nasal cannula with saturations >94%. No ICU criteria at present.',
+        nurse: 'Partially compliant',
+        ai: 'Partially compliant',
+        id: 'Partially compliant'
+      },
+      mary: {
+        name: 'Mary Joseph',
+        ward: 'ICU',
+        oxygen: 'Non-invasive ventilation',
+        treating: 'Dr. Samuel – ICU Consultant',
+        comorbid: 'DM',
+        diagnosis: 'Hospital-acquired pneumonia (HAP)',
+        status: 'Improving',
+        iddoctor: 'Dr. Vinod – ID Physician',
+        narrative: '60-year-old female with HAP on ICU care, clinically improving with stable haemodynamics and better oxygenation compared to admission.',
+        nurse: 'Partially compliant',
+        ai: 'Compliant',
+        id: 'Compliant'
+      },
+      thomas: {
+        name: 'Thomas Mathew',
+        ward: 'Surgery',
+        oxygen: 'Room air',
+        treating: 'Dr. Kareem – Surgery Consultant',
+        comorbid: 'HTN',
+        diagnosis: 'Complicated UTI post-op',
+        status: 'Stable',
+        iddoctor: 'Dr. Vinod – ID Physician',
+        narrative: '48-year-old male post-operative patient with complicated UTI; afebrile with improving lab parameters and good oral intake.',
+        nurse: 'Partially compliant',
+        ai: 'Partially compliant',
+        id: 'Compliant'
+      },
+      narayanan: {
+        name: 'Narayanan Pillai',
+        ward: 'Orthopaedics',
+        oxygen: 'Room air',
+        treating: 'Dr. Ramesh – Ortho Consultant',
+        comorbid: 'DM, Peripheral vascular disease',
+        diagnosis: 'Diabetic foot ulcer (DFU)',
+        status: 'Stable',
+        iddoctor: 'Dr. Vinod – ID Physician',
+        narrative: '65-year-old male with DFU on appropriate wound care and systemic antibiotics; stable vitals, no systemic sepsis.',
+        nurse: 'Compliant',
+        ai: 'Partially compliant',
+        id: 'Compliant'
+      }
+    };
+
+    const nameEl = document.getElementById('cs-name');
+    const wardEl = document.getElementById('cs-ward');
+    const oxyEl = document.getElementById('cs-oxygen');
+    const treatingEl = document.getElementById('cs-treating');
+    const comorbidEl = document.getElementById('cs-comorbid');
+    const diagEl = document.getElementById('cs-diagnosis');
+    const statusEl = document.getElementById('cs-status');
+    const idDocEl = document.getElementById('cs-iddoctor');
+    const narrativeEl = document.getElementById('cs-narrative');
+    const detailedSection = document.getElementById('detailed-section');
+    const simpleSection = document.getElementById('simple-section');
+    const simpleNurse = document.getElementById('simple-nurse');
+    const simpleAi = document.getElementById('simple-ai');
+    const simpleId = document.getElementById('simple-id');
+
+    document.querySelectorAll('.queue-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pid = btn.getAttribute('data-patient');
+        const p = patients[pid];
+        if (!p) return;
+
+        document.querySelectorAll('.queue-btn').forEach(b => b.classList.remove('queue-active'));
+        btn.classList.add('queue-active');
+
+        nameEl.textContent = p.name;
+        wardEl.textContent = p.ward;
+        oxyEl.textContent = p.oxygen;
+        treatingEl.textContent = p.treating;
+        comorbidEl.textContent = p.comorbid;
+        diagEl.textContent = p.diagnosis;
+        statusEl.textContent = p.status;
+        idDocEl.textContent = p.iddoctor;
+        narrativeEl.textContent = p.narrative;
+
+        if (pid === 'asha') {
+          detailedSection.classList.remove('hidden');
+          simpleSection.classList.add('hidden');
+        } else {
+          detailedSection.classList.add('hidden');
+          simpleSection.classList.remove('hidden');
+          simpleNurse.textContent = p.nurse;
+          simpleAi.textContent = p.ai;
+          simpleId.textContent = p.id;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
